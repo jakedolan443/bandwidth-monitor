@@ -10,20 +10,16 @@ class BandwidthMonitorApp:
         self.root = root
         self.root.title("Bandwidth Monitor")
         self.root.geometry("396x128")
-        self.root.configure(bg="#2f2f2f")  # Darker grey background
+        self.root.configure(bg="#2f2f2f")  
 
-        # Set up the main frame
         self.main_frame = tk.Frame(root, bg="#2f2f2f", bd=15)
         self.main_frame.pack(fill=tk.BOTH, expand=True)
 
-        # Load and display image
         self.image_frame = tk.Frame(self.main_frame, width=96, bg="#2f2f2f")
         self.image_frame.pack(side=tk.LEFT, fill=tk.Y)
 
-        # Load image
         self.load_image()
 
-        # Create a frame for text display
         self.text_frame = tk.Frame(self.main_frame, bg="#2f2f2f")
         self.text_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
@@ -41,7 +37,6 @@ class BandwidthMonitorApp:
         self.label_recv_text = tk.Label(self.recv_frame, text=" Down ", font=("Courier New", 16), fg="lightblue", bg="#2f2f2f")
         self.label_recv_text.pack(side=tk.LEFT, anchor="w", pady=(8, 0))
 
-        # Labels for the bandwidth values
         self.label_sent_value = tk.Label(self.sent_frame, text="000.000 B/s", font=("Courier New", 16), fg="lightblue", bg="#2f2f2f")
         self.label_sent_value.pack(side=tk.LEFT, pady=(8, 0), padx=(29, 0))
 
@@ -50,12 +45,9 @@ class BandwidthMonitorApp:
 
         # Initialize previous network I/O counters
         self.prev_net_io = psutil.net_io_counters()
-
-        # Update the display every 500 milliseconds
         self.update_display()
 
     def load_image(self):
-        """Load and display an image in the image frame."""
         try:
             image = Image.open(load_image_from_string(icon))
             image = image.resize((96, 96), Image.ANTIALIAS)
@@ -66,7 +58,6 @@ class BandwidthMonitorApp:
             print(f"Error loading image: {e}")
 
     def format_bytes(self, bytes):
-        """Format bytes to a human-readable string with appropriate units."""
         if bytes < 1024:
             formatted = f"{bytes:.3f} By"
         elif bytes < 1024**2:
@@ -84,7 +75,6 @@ class BandwidthMonitorApp:
         return f"{number} {unit}/s"
 
     def calculate_bandwidth(self, prev, curr, interval):
-        """Calculate bandwidth in bytes per second."""
         bytes_sent = curr.bytes_sent - prev.bytes_sent
         bytes_recv = curr.bytes_recv - prev.bytes_recv
 
@@ -95,22 +85,17 @@ class BandwidthMonitorApp:
         return bandwidth_sent_per_sec, bandwidth_recv_per_sec
 
     def update_display(self):
-        interval = 0.5  # Interval in seconds (500 milliseconds)
+        interval = 0.5  
 
-        # Capture current network I/O statistics
         curr_net_io = psutil.net_io_counters()
 
-        # Calculate bandwidth
         bandwidth_sent_per_sec, bandwidth_recv_per_sec = self.calculate_bandwidth(self.prev_net_io, curr_net_io, interval)
 
-        # Update labels
         self.label_sent_value.config(text=self.format_bytes(bandwidth_sent_per_sec))
         self.label_recv_value.config(text=self.format_bytes(bandwidth_recv_per_sec))
 
-        # Update previous values
         self.prev_net_io = curr_net_io
 
-        # Schedule the update function to be called again after the interval
         self.root.after(int(interval * 1000), self.update_display)
 
 
